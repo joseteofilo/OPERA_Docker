@@ -1,4 +1,4 @@
-# OPERA Docker Setup - Complete Guide
+# OPERA Docker
 
 This guide provides comprehensive instructions for running OPERA (OPEn structure-activity/property Relationship App) in Docker containers for both Command-Line (CL) and Graphical User Interface (UI) versions.
 
