@@ -1,0 +1,62 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    OPERA_HOME=/usr/local/OPERA \
+    JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 \
+    _JAVA_OPTIONS="-Djava.awt.headless=false"
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    tar \
+    xz-utils \
+    ca-certificates \
+    openjdk-11-jre \
+    libxt6 \
+    libxext6 \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
+    libxrandr2 \
+    libgomp1 \
+    libgtk2.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libxdamage1 \
+    libgbm1 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libasound2 \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libxcomposite1 \
+    libswt-gtk-4-java \
+    x11-apps \
+    xauth \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p ${OPERA_HOME} /data/input /data/output
+
+COPY OPERA2.9_UI_mcr.tar.xz /tmp/
+
+RUN cd /tmp && \
+    tar -xf OPERA2.9_UI_mcr.tar.xz && \
+    cd OPERA2.9_UI_mcr/OPERA2_UI_mcr && \
+    ./OPERA2.9_UI_mcr_Installer.install -mode silent -agreeToLicense yes -destinationFolder ${OPERA_HOME} && \
+    rm -rf /tmp/OPERA*
+
+RUN mkdir -p /usr/local/bin/OPERA && \
+    ln -s /usr/local/OPERA/application /usr/local/bin/OPERA/application
+
+# Make KNIME directories writable for runtime
+RUN chmod -R 777 ${OPERA_HOME}/application/knime_4.5.1/configuration && \
+    chmod -R 777 ${OPERA_HOME}/application/knime_4.5.1/knime-workspace
+
+ENV PATH="${OPERA_HOME}/application:${PATH}" \
+    LD_LIBRARY_PATH="${OPERA_HOME}/v912/runtime/glnxa64:${OPERA_HOME}/v912/bin/glnxa64:${OPERA_HOME}/v912/sys/os/glnxa64"
+
+WORKDIR /data
+
+ENTRYPOINT ["/usr/local/OPERA/application/run_OPERA_UI.sh", "/usr/local/OPERA/v912"]
+CMD []
