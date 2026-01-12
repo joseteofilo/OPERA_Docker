@@ -430,7 +430,7 @@ OPERA_Docker/
 ├── run_opera_ui.sh              # Wrapper script for UI (Linux/macOS)
 ├── run_opera.ps1                # Wrapper script for CL (Windows)
 ├── run_opera_ui.ps1             # Wrapper script for UI (Windows)
-└── README.md             # This file
+└── README.md                    # This file
 ```
 
 ### Build Images
