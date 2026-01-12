@@ -59,7 +59,7 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 
 ```bash
 # Navigate to OPERA directory
-cd /path/to/OPERA-master
+cd /path/to/OPERA_Docker
 
 # Ensure OPERA2.9_CL_mcr.tar.xz is in this directory
 ls OPERA2.9_CL_mcr.tar.xz
@@ -221,7 +221,7 @@ Inside the container, run OPERA manually:
 
 ```bash
 # Navigate to OPERA directory
-cd /path/to/OPERA-master
+cd /path/to/OPERA_Docker
 
 # Ensure OPERA2.9_UI_mcr.tar.xz is in this directory
 ls OPERA2.9_UI_mcr.tar.xz
@@ -421,7 +421,7 @@ sudo systemctl start docker
 ### File Structure
 
 ```text
-OPERA-master/
+OPERA_Docker/
 ├── Dockerfile                   # CL version Dockerfile
 ├── Dockerfile.ui                # UI version Dockerfile
 ├── OPERA2.9_CL_mcr.tar.xz       # CL installer (download separately)
