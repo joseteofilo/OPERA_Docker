@@ -27,8 +27,8 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 
 - **Docker Desktop** (macOS/Windows) or **Docker Engine** (Linux): https://www.docker.com/get-started/
 - **OPERA Installer Files** — Download from: https://github.com/kmansouri/OPERA/releases/tag/v2.9.2
-  - `OPERA2.9_CL_mcr.tar.xz` (Command-line version)
-  - `OPERA2.9_UI_mcr.tar.xz` (UI version)
+  - [OPERA2.9_CL_mcr.tar.xz](https://github.com/kmansouri/OPERA/releases/download/v2.9.2/OPERA2.9_CL_mcr.tar.xz) (Command-line version)
+  - [OPERA2.9_UI_mcr.tar.xz](https://github.com/kmansouri/OPERA/releases/download/v2.9.2/OPERA2.9_UI_mcr.tar.xz) (UI version)
 
 ### For UI Version on macOS
 
