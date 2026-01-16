@@ -60,12 +60,20 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 # Navigate to OPERA directory
 cd /path/to/OPERA_Docker
 
-# Build the image (takes 5-10 minutes)
-# The Dockerfile will automatically download the latest OPERA release
-docker build --platform linux/amd64 -f Dockerfile -t opera:cl .
+# Build CL version only (recommended for most users)
+./build.sh cl
+
+# Build UI version only
+./build.sh ui
+
+# Build both CL and UI versions
+./build.sh both
+
+# Or use docker directly
+docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
 
 # If build fails, try with --no-cache
-docker build --no-cache --platform linux/amd64 -f Dockerfile -t opera:cl .
+docker build --no-cache --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
 ```
 
 ### Verify Installation
@@ -220,12 +228,17 @@ Inside the container, run OPERA manually:
 # Navigate to OPERA directory
 cd /path/to/OPERA_Docker
 
-# Build the image (takes 10-15 minutes)
-# The Dockerfile will automatically download the latest OPERA UI release
-docker build --platform linux/amd64 -f Dockerfile.ui -t opera:ui .
+# Build UI version only
+./build.sh ui
+
+# Build both CL and UI versions
+./build.sh both
+
+# Or use docker directly
+docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 
 # If build fails or gets cancelled, increase Docker resources and try:
-docker build --no-cache --platform linux/amd64 -f Dockerfile.ui -t opera:ui .
+docker build --no-cache --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 ```
 
 ### Run the UI Version
@@ -417,8 +430,8 @@ sudo systemctl start docker
 
 ```text
 OPERA_Docker/
-├── Dockerfile                   # CL version Dockerfile (auto-downloads installer)
-├── Dockerfile.ui                # UI version Dockerfile (auto-downloads installer)
+├── Dockerfile                   # Unified Dockerfile for both CL and UI (auto-downloads installer)
+├── build.sh                     # Build script for CL, UI, or both versions
 ├── run_opera.sh                 # Wrapper script for CL (Linux/macOS)
 ├── run_opera_ui.sh              # Wrapper script for UI (Linux/macOS)
 ├── run_opera.ps1                # Wrapper script for CL (Windows)
@@ -430,7 +443,7 @@ OPERA_Docker/
 
 ```bash
 # CL version
-docker build --platform linux/amd64 -f Dockerfile -t opera:cl .
+docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
 ```
 
 ## Quick Reference Commands
@@ -438,11 +451,14 @@ docker build --platform linux/amd64 -f Dockerfile -t opera:cl .
 ### Build Images
 
 ```bash
-# CL version
-docker build --platform linux/amd64 -f Dockerfile -t opera:latest .
+# Using build script (recommended)
+./build.sh cl    # Build CL version only
+./build.sh ui    # Build UI version only
+./build.sh both  # Build both versions
 
-# UI version
-docker build --platform linux/amd64 -f Dockerfile.ui -t opera:ui .
+# Using docker directly
+docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
+docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 ```
 
 ### Useful Docker Commands

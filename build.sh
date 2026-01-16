@@ -6,47 +6,74 @@ echo "OPERA Docker Build Script"
 echo "=========================="
 echo ""
 
-# Check which version to build
-if [ "$1" == "ui" ]; then
-    echo "Building OPERA UI version..."
-
-    if [ ! -f "OPERA2.9_UI_mcr.tar.xz" ]; then
-        echo "ERROR: OPERA2.9_UI_mcr.tar.xz not found!"
-        echo ""
-        echo "Please download from:"
-        echo "https://github.com/USEPA/OPERA/releases"
-        echo ""
-        echo "Place OPERA2.9_UI_mcr.tar.xz in this directory and run again."
-        exit 1
-    fi
-
-    docker build -f Dockerfile.ui -t opera:2.9-ui -t opera:ui .
+show_usage() {
+    echo "Usage: $0 [cl|ui|both]"
     echo ""
-    echo "Build complete! To run UI:"
-    echo "  ./run_opera_ui.sh"
-
-elif [ "$1" == "cl" ] || [ -z "$1" ]; then
-    echo "Building OPERA Command-Line version..."
-
-    if [ ! -f "OPERA2.9_CL_mcr.tar.xz" ]; then
-        echo "ERROR: OPERA2.9_CL_mcr.tar.xz not found!"
-        echo ""
-        echo "Please download from:"
-        echo "https://github.com/USEPA/OPERA/releases"
-        echo ""
-        echo "Place OPERA2.9_CL_mcr.tar.xz in this directory and run again."
-        exit 1
-    fi
-
-    docker build -f Dockerfile -t opera:2.9-cl -t opera:cl .
+    echo "Options:"
+    echo "  cl    - Build command-line version only (opera:cl)"
+    echo "  ui    - Build UI version only (opera:ui)"
+    echo "  both  - Build both versions (default)"
     echo ""
-    echo "Build complete! To run:"
-    echo "  ./run_opera.sh molecules.sdf -a"
-
-else
-    echo "Usage: ./build.sh [cl|ui]"
-    echo ""
-    echo "  cl  - Build command-line version (default)"
-    echo "  ui  - Build UI version with X11 support"
+    echo "Examples:"
+    echo "  $0 cl      # Build CL version"
+    echo "  $0 ui      # Build UI version"
+    echo "  $0 both    # Build both versions"
+    echo "  $0         # Build both versions (default)"
     exit 1
-fi
+}
+
+build_cl() {
+    echo "Building OPERA Command-Line (CL) version..."
+    echo "-------------------------------------------"
+    docker build --platform linux/amd64 \
+        --build-arg VERSION=cl \
+        -t opera:cl \
+        .
+    echo ""
+    echo "✓ CL version built successfully: opera:cl"
+}
+
+build_ui() {
+    echo "Building OPERA UI version..."
+    echo "----------------------------"
+    docker build --platform linux/amd64 \
+        --build-arg VERSION=ui \
+        -t opera:ui \
+        .
+    echo ""
+    echo "✓ UI version built successfully: opera:ui"
+}
+
+VERSION="${1:-both}"
+
+case "$VERSION" in
+    cl)
+        build_cl
+        ;;
+    ui)
+        build_ui
+        ;;
+    both)
+        build_cl
+        echo ""
+        build_ui
+        ;;
+    -h|--help)
+        show_usage
+        ;;
+    *)
+        echo "Error: Invalid option '$VERSION'"
+        echo ""
+        show_usage
+        ;;
+esac
+
+echo ""
+echo "=========================="
+echo "Build complete!"
+echo ""
+echo "Available images:"
+docker images | grep opera || echo "No OPERA images found"
+echo ""
+echo "Available images:"
+docker images | grep opera || echo "No OPERA images found"
