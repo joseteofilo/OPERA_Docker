@@ -5,13 +5,14 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Command-Line (CL) Version](#command-line-cl-version)
-  - [Build the CL Image](#build-the-cl-image)
+- [Building OPERA Docker Images](#building-opera-docker-images)
+  - [Build Images](#build-images)
+    - [Build CL Version Only](#build-cl-version-only)
+    - [Build UI Version Only](#build-ui-version-only)
+    - [Build Both Versions](#build-both-versions)
   - [Verify Installation](#verify-installation)
-  - [Run the CL Version](#run-the-cl-version)
+- [Command-Line (CL) Version](#command-line-cl-version)
 - [Graphical User Interface (UI) Version](#graphical-user-interface-ui-version)
-  - [Build the UI Image](#build-the-ui-image)
-  - [Run the UI Version](#run-the-ui-version)
 - [Troubleshooting](#troubleshooting)
   - [CL Version Issues](#cl-version-issues)
   - [UI Version Issues](#ui-version-issues)
@@ -52,22 +53,24 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 - **UI Version**: Minimum 4GB RAM, 4 CPU cores (8GB+ recommended)
 - **Apple Silicon**: Increase Docker Desktop resources to maximum available for UI version
 
-## Command-Line (CL) Version
+## Building OPERA Docker Images
 
-### Build the CL Image
+OPERA provides both Command-Line (CL) and Graphical User Interface (UI) versions. You can build either or both using the unified Dockerfile.
+
+### Build Images
+
+Navigate to OPERA directory first:
+```bash
+cd /path/to/OPERA_Docker
+```
+
+#### Build CL Version Only
+
+Recommended for most users who only need command-line predictions.
 
 ```bash
-# Navigate to OPERA directory
-cd /path/to/OPERA_Docker
-
-# Build CL version only (recommended for most users)
+# Using build script
 ./build.sh cl
-
-# Build UI version only
-./build.sh ui
-
-# Build both CL and UI versions
-./build.sh both
 
 # Or use docker directly
 docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
@@ -76,17 +79,51 @@ docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
 docker build --no-cache --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
 ```
 
+**Build Time:** 5-10 minutes (15-30 minutes on Apple Silicon)
+
+#### Build UI Version Only
+
+For users who need the graphical interface.
+
+```bash
+# Using build script
+./build.sh ui
+
+# Or use docker directly
+docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
+
+# If build fails, try with --no-cache
+docker build --no-cache --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
+```
+
+**Build Time:** 10-15 minutes (15-30 minutes on Apple Silicon)
+
+#### Build Both Versions
+
+Build both CL and UI versions at once.
+
+```bash
+# Using build script
+./build.sh both
+
+# Or use docker directly
+docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl . && \
+docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
+```
+
+**Build Time:** 15-25 minutes (30-60 minutes on Apple Silicon)
+
 ### Verify Installation
 
 ```bash
-# Check if image was built successfully
+# Check if images were built successfully
 docker images | grep opera
 
-# Test the installation (show help)
+# Test the CL installation (show help)
 docker run --rm --platform linux/amd64 opera:cl -h
 ```
 
-### Run the CL Version
+## Command-Line (CL) Version
 
 The recommended way to run the Command-Line version is using the provided wrapper script `run_opera.sh` (for Linux/macOS) or `run_opera.ps1` (for Windows). These scripts handle all Docker complexity (mounting volumes, mapping user IDs, handling paths) and work exactly like the native OPERA application.
 
@@ -221,27 +258,6 @@ Inside the container, run OPERA manually:
 ```
 
 ## Graphical User Interface (UI) Version
-
-### Build the UI Image
-
-```bash
-# Navigate to OPERA directory
-cd /path/to/OPERA_Docker
-
-# Build UI version only
-./build.sh ui
-
-# Build both CL and UI versions
-./build.sh both
-
-# Or use docker directly
-docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
-
-# If build fails or gets cancelled, increase Docker resources and try:
-docker build --no-cache --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
-```
-
-### Run the UI Version
 
 If you wish to use the graphical interface of OPERA, you must use the `ui` scripts. Note that this requires an X11 server (GUI display) on your host machine.
 
