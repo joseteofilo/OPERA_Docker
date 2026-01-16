@@ -5,7 +5,7 @@ Usage: .\run_opera.ps1 -s <file> [options]
 #>
 
 $ErrorActionPreference = "Stop"
-$Image = "opera:latest"
+$Image = "opera:cl"
 
 # Function to show help
 function Show-Help {

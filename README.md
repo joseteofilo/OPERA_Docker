@@ -26,9 +26,8 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 ### For All Platforms
 
 - **Docker Desktop** (macOS/Windows) or **Docker Engine** (Linux): https://www.docker.com/get-started/
-- **OPERA Installer Files** — Download from: https://github.com/kmansouri/OPERA/releases/tag/v2.9.2
-  - [OPERA2.9_CL_mcr.tar.xz](https://github.com/kmansouri/OPERA/releases/download/v2.9.2/OPERA2.9_CL_mcr.tar.xz) (Command-line version)
-  - [OPERA2.9_UI_mcr.tar.xz](https://github.com/kmansouri/OPERA/releases/download/v2.9.2/OPERA2.9_UI_mcr.tar.xz) (UI version)
+- **OPERA Installer Files** — The Docker build process will automatically download the latest version from: https://github.com/kmansouri/OPERA/releases/latest
+  - No manual download required - the Dockerfile fetches the latest release automatically
 
 ### For UI Version on macOS
 
@@ -61,14 +60,12 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
 # Navigate to OPERA directory
 cd /path/to/OPERA_Docker
 
-# Ensure OPERA2.9_CL_mcr.tar.xz is in this directory
-ls OPERA2.9_CL_mcr.tar.xz
-
 # Build the image (takes 5-10 minutes)
-docker build --platform linux/amd64 -f Dockerfile -t opera:latest .
+# The Dockerfile will automatically download the latest OPERA release
+docker build --platform linux/amd64 -f Dockerfile -t opera:cl .
 
 # If build fails, try with --no-cache
-docker build --no-cache --platform linux/amd64 -f Dockerfile -t opera:latest .
+docker build --no-cache --platform linux/amd64 -f Dockerfile -t opera:cl .
 ```
 
 ### Verify Installation
@@ -78,7 +75,7 @@ docker build --no-cache --platform linux/amd64 -f Dockerfile -t opera:latest .
 docker images | grep opera
 
 # Test the installation (show help)
-docker run --rm --platform linux/amd64 opera:latest -h
+docker run --rm --platform linux/amd64 opera:cl -h
 ```
 
 ### Run the CL Version
@@ -156,7 +153,7 @@ If you prefer to run `docker` commands manually without the wrapper script, you 
 docker run --rm --platform linux/amd64 \
   -v "$(pwd):/data" \
   -w /data \
-  opera:latest \
+  opera:cl \
   -s input.sdf
 ```
 
@@ -169,20 +166,20 @@ You can mount files and directories from any location on your host machine, not 
 docker run --rm --platform linux/amd64 \
   -v "$(pwd):/data" \
   -w /data \
-  opera:latest -s your_file.sdf
+  opera:cl -s your_file.sdf
 
 # Windows PowerShell example with custom path
 docker run --rm --platform linux/amd64 `
   -v "C:/Path/To/Your/Project:/data" `
   -w /data `
-  opera:latest -s your_file.sdf
+  opera:cl -s your_file.sdf
 
 # Mount multiple directories from different locations (Linux/macOS example)
 docker run --rm --platform linux/amd64 \
   -v "/path/to/chemistry/data:/data" \
   -v "/path/to/results:/output" \
   -w /data \
-  opera:latest -s your_file.sdf
+  opera:cl -s your_file.sdf
 ```
 
 **Volume mounting format**: `-v "host_path:container_path"`
@@ -206,7 +203,7 @@ docker run --rm -it --platform linux/amd64 \
   -v "$(pwd)/input:/data/input" \
   -v "$(pwd)/output:/data/output" \
   --entrypoint /bin/bash \
-  opera:latest
+  opera:cl
 ```
 
 Inside the container, run OPERA manually:
@@ -223,10 +220,8 @@ Inside the container, run OPERA manually:
 # Navigate to OPERA directory
 cd /path/to/OPERA_Docker
 
-# Ensure OPERA2.9_UI_mcr.tar.xz is in this directory
-ls OPERA2.9_UI_mcr.tar.xz
-
 # Build the image (takes 10-15 minutes)
+# The Dockerfile will automatically download the latest OPERA UI release
 docker build --platform linux/amd64 -f Dockerfile.ui -t opera:ui .
 
 # If build fails or gets cancelled, increase Docker resources and try:
@@ -422,10 +417,8 @@ sudo systemctl start docker
 
 ```text
 OPERA_Docker/
-├── Dockerfile                   # CL version Dockerfile
-├── Dockerfile.ui                # UI version Dockerfile
-├── OPERA2.9_CL_mcr.tar.xz       # CL installer (download separately)
-├── OPERA2.9_UI_mcr.tar.xz       # UI installer (download separately)
+├── Dockerfile                   # CL version Dockerfile (auto-downloads installer)
+├── Dockerfile.ui                # UI version Dockerfile (auto-downloads installer)
 ├── run_opera.sh                 # Wrapper script for CL (Linux/macOS)
 ├── run_opera_ui.sh              # Wrapper script for UI (Linux/macOS)
 ├── run_opera.ps1                # Wrapper script for CL (Windows)
@@ -437,7 +430,7 @@ OPERA_Docker/
 
 ```bash
 # CL version
-docker build --platform linux/amd64 -f Dockerfile -t opera:latest .
+docker build --platform linux/amd64 -f Dockerfile -t opera:cl .
 ```
 
 ## Quick Reference Commands
@@ -465,7 +458,7 @@ docker ps
 docker stop $(docker ps -q)
 
 # Remove image
-docker rmi opera:latest
+docker rmi opera:cl
 docker rmi opera:ui
 
 # View container logs

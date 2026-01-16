@@ -38,7 +38,7 @@ elif [ "$1" == "cl" ] || [ -z "$1" ]; then
         exit 1
     fi
 
-    docker build -f Dockerfile -t opera:2.9-cl -t opera:latest .
+    docker build -f Dockerfile -t opera:2.9-cl -t opera:cl .
     echo ""
     echo "Build complete! To run:"
     echo "  ./run_opera.sh molecules.sdf -a"

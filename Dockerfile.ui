@@ -38,12 +38,14 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p ${OPERA_HOME} /data/input /data/output
 
-COPY OPERA2.9_UI_mcr.tar.xz /tmp/
+# Download latest OPERA UI installer from GitHub
+RUN wget -O /tmp/OPERA_UI_mcr.tar.xz $(wget -qO- https://api.github.com/repos/kmansouri/OPERA/releases/latest | grep "browser_download_url.*UI_mcr.tar.xz" | cut -d '"' -f 4)
 
+# Extract and install
 RUN cd /tmp && \
-    tar -xf OPERA2.9_UI_mcr.tar.xz && \
-    cd OPERA2.9_UI_mcr/OPERA2_UI_mcr && \
-    ./OPERA2.9_UI_mcr_Installer.install -mode silent -agreeToLicense yes -destinationFolder ${OPERA_HOME} && \
+    tar -xf OPERA_UI_mcr.tar.xz && \
+    cd OPERA*_UI_mcr/OPERA*_UI_mcr && \
+    ./OPERA*_UI_mcr_Installer.install -mode silent -agreeToLicense yes -destinationFolder ${OPERA_HOME} && \
     rm -rf /tmp/OPERA*
 
 RUN mkdir -p /usr/local/bin/OPERA && \

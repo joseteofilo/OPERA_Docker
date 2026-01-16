@@ -26,14 +26,14 @@ RUN apt-get update && apt-get install -y \
 # Create directories
 RUN mkdir -p ${OPERA_HOME} /data/input /data/output
 
-# Copy and extract OPERA installer
-COPY OPERA2.9_CL_mcr.tar.xz /tmp/
+# Download latest OPERA installer from GitHub
+RUN wget -O /tmp/OPERA_CL_mcr.tar.xz $(wget -qO- https://api.github.com/repos/kmansouri/OPERA/releases/latest | grep "browser_download_url.*CL_mcr.tar.xz" | cut -d '"' -f 4)
 
 # Extract and install
 RUN cd /tmp && \
-    tar -xf OPERA2.9_CL_mcr.tar.xz && \
-    cd OPERA2.9_CL_mcr/OPERA2_CL_mcr && \
-    ./OPERA2.9_mcr_Installer.install -mode silent -agreeToLicense yes -destinationFolder ${OPERA_HOME} && \
+    tar -xf OPERA_CL_mcr.tar.xz && \
+    cd OPERA*_CL_mcr/OPERA*_CL_mcr && \
+    ./OPERA*_mcr_Installer.install -mode silent -agreeToLicense yes -destinationFolder ${OPERA_HOME} && \
     rm -rf /tmp/OPERA* && \
     chmod -R 777 ${OPERA_HOME}/application/knime_4.5.1/configuration && \
     chmod -R 777 ${OPERA_HOME}/application/knime_4.5.1/knime-workspace

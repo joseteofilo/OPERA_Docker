@@ -3,7 +3,7 @@
 # OPERA Docker Wrapper Script
 # Allows running OPERA with simplified arguments, handling Docker mounting automatically.
 
-IMAGE="opera:latest"
+IMAGE="opera:cl"
 
 # Function to show usage
 show_help() {
