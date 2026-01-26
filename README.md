@@ -9,10 +9,14 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
   - [Build Images](#build-images)
     - [Build CL Version Only](#build-cl-version-only)
     - [Build UI Version Only](#build-ui-version-only)
-    - [Build Both Versions](#build-both-versions)
+    - [Build PAR Version Only](#build-par-version-only)
+    - [Build All Versions](#build-all-versions)
   - [Verify Installation](#verify-installation)
 - [Command-Line (CL) Version](#command-line-cl-version)
 - [Graphical User Interface (UI) Version](#graphical-user-interface-ui-version)
+- [Parallel (PAR) Version](#parallel-par-version)
+  - [PAR Version Requirements](#par-version-requirements)
+  - [PAR Version Usage](#par-version-usage)
 - [Troubleshooting](#troubleshooting)
   - [CL Version Issues](#cl-version-issues)
   - [UI Version Issues](#ui-version-issues)
@@ -81,6 +85,8 @@ docker build --no-cache --platform linux/amd64 --build-arg VERSION=cl -t opera:c
 
 **Build Time:** 5-10 minutes (15-30 minutes on Apple Silicon)
 
+**Build Time:** 5-10 minutes (15-30 minutes on Apple Silicon)
+
 #### Build UI Version Only
 
 For users who need the graphical interface.
@@ -96,18 +102,31 @@ docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 docker build --no-cache --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 ```
 
-**Build Time:** 10-15 minutes (15-30 minutes on Apple Silicon)
+#### Build PAR Version Only
 
-#### Build Both Versions
-
-Build both CL and UI versions at once.
+For users who need the parallel processing version.
 
 ```bash
 # Using build script
-./build.sh both
+./build.sh par
+
+# Or use docker directly
+docker build --platform linux/amd64 --build-arg VERSION=par -t opera:par .
+```
+
+**Build Time:** 10-15 minutes (15-30 minutes on Apple Silicon)
+
+#### Build All Versions
+
+Build CL, PAR, and UI versions at once.
+
+```bash
+# Using build script
+./build.sh all
 
 # Or use docker directly
 docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl . && \
+docker build --platform linux/amd64 --build-arg VERSION=par -t opera:par . && \
 docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 ```
 
@@ -289,6 +308,89 @@ The UI scripts will map your local directories so you can browse and select file
 
 The MacOS/Linux implementation handles the display forwarding and file mapping automatically.
 
+## Parallel (PAR) Version
+
+The Parallel version allows running OPERA with parallel processing capabilities using MATLAB's Parallel Computing Toolbox. Use `run_opera_par.sh` (Linux/macOS) or `run_opera_par.ps1` (Windows).
+
+### PAR Version Requirements
+
+**Important:** The PAR version has higher resource requirements than the CL version due to parallel worker processes.
+
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| **Docker Desktop Memory** | 8GB | 16-24GB |
+| **Shared Memory (shm-size)** | 4GB | 8GB |
+| **CPU Cores** | 2 | 4+ |
+
+**Notes:**
+- Increase Docker Desktop memory allocation in **Settings > Resources > Memory** to at least 16GB for optimal performance.
+- The `-P` flag controls the number of parallel workers. Reduce this value if you experience memory issues or worker crashes.
+
+### PAR Version Usage
+
+#### Linux & macOS
+
+```bash
+# Make the script executable (first time only)
+chmod +x run_opera_par.sh
+
+# Run PAR version with structure file
+./run_opera_par.sh -P 2 -s molecules.sdf -o predictions.csv
+
+# With standardization (recommended for raw structures)
+./run_opera_par.sh -P 2 -s molecules.sdf -st -o predictions.csv
+```
+
+#### Windows (PowerShell)
+
+```powershell
+# Unblock script (first time only)
+Unblock-File -Path .\run_opera_par.ps1
+
+# Run PAR version with structure file
+.\run_opera_par.ps1 -P 2 -s molecules.sdf -o predictions.csv
+
+# With standardization (recommended for raw structures)
+.\run_opera_par.ps1 -P 2 -s molecules.sdf -st -o predictions.csv
+```
+
+#### PAR Version Examples
+
+```bash
+# Run with 2 parallel workers (recommended for most systems)
+./run_opera_par.sh -P 2 -s molecules.sdf -o results.csv
+
+# Run with 4 parallel workers (requires more memory)
+./run_opera_par.sh -P 4 -s molecules.sdf -o results.csv
+
+# Run specific endpoints with parallel processing
+./run_opera_par.sh -P 2 -s molecules.sdf -e logP BCF -o results.csv
+
+# With standardization
+./run_opera_par.sh -P 2 -s molecules.sdf -st -o results.csv
+
+# Use pre-calculated descriptors (faster if already computed)
+./run_opera_par.sh -P 2 -d molecules_PadelDesc.csv -o results.csv
+```
+
+#### PAR Version Command Reference
+
+| Flag | Description |
+|------|-------------|
+| `-P <num>` | Number of parallel workers (default: auto, recommend 2-4) |
+| `-s <file>` | Input structure file (SDF, MOL, SMI) |
+| `-d <file>` | Input descriptors file (CSV) |
+| `-o <file>` | Output file name |
+| `-e <endpoints>` | Specific endpoints to calculate (e.g., `logP BCF`) |
+| `-st` | Standardize structures before prediction |
+| `-h` | Show full help menu |
+
+#### Troubleshooting PAR Version
+
+- **"Killed" or worker aborts**: Reduce the number of workers with `-P 2` or `-P 1`, and increase Docker memory allocation.
+- **X11/AWT errors**: The wrapper script handles this automatically with Xvfb virtual display.
+
+
 ## Troubleshooting
 
 ### UI Version Issues
@@ -446,11 +548,13 @@ sudo systemctl start docker
 
 ```text
 OPERA_Docker/
-├── Dockerfile                   # Unified Dockerfile for both CL and UI (auto-downloads installer)
-├── build.sh                     # Build script for CL, UI, or both versions
+├── Dockerfile                   # Unified Dockerfile for CL, PAR, and UI (auto-downloads installer)
+├── build.sh                     # Build script for CL, PAR, UI, or all versions
 ├── run_opera.sh                 # Wrapper script for CL (Linux/macOS)
+├── run_opera_par.sh             # Wrapper script for PAR (Linux/macOS)
 ├── run_opera_ui.sh              # Wrapper script for UI (Linux/macOS)
 ├── run_opera.ps1                # Wrapper script for CL (Windows)
+├── run_opera_par.ps1            # Wrapper script for PAR (Windows)
 ├── run_opera_ui.ps1             # Wrapper script for UI (Windows)
 └── README.md                    # This file
 ```
@@ -469,11 +573,13 @@ docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
 ```bash
 # Using build script (recommended)
 ./build.sh cl    # Build CL version only
+./build.sh par   # Build PAR version only
 ./build.sh ui    # Build UI version only
-./build.sh both  # Build both versions
+./build.sh all   # Build all versions
 
 # Using docker directly
 docker build --platform linux/amd64 --build-arg VERSION=cl -t opera:cl .
+docker build --platform linux/amd64 --build-arg VERSION=par -t opera:par .
 docker build --platform linux/amd64 --build-arg VERSION=ui -t opera:ui .
 ```
 
@@ -491,6 +597,7 @@ docker stop $(docker ps -q)
 
 # Remove image
 docker rmi opera:cl
+docker rmi opera:par
 docker rmi opera:ui
 
 # View container logs
