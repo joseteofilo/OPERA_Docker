@@ -1,3 +1,5 @@
 OPERA2.9_UI_mcr.tar.xz
 OPERA2.9_CL_mcr.tar.xz
 BCF_QR_50.sdf
+push_docker_hub.sh
+.DS_Store

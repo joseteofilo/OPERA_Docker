@@ -18,9 +18,6 @@ This guide provides comprehensive instructions for running OPERA (OPEn structure
   - [PAR Version Requirements](#par-version-requirements)
   - [PAR Version Usage](#par-version-usage)
 - [Troubleshooting](#troubleshooting)
-  - [CL Version Issues](#cl-version-issues)
-  - [UI Version Issues](#ui-version-issues)
-  - [General Issues](#general-issues)
 - [Technical Details](#technical-details)
   - [File Structure](#file-structure)
 - [Quick Reference Commands](#quick-reference-commands)
@@ -65,7 +62,7 @@ OPERA provides both Command-Line (CL) and Graphical User Interface (UI) versions
 
 Navigate to OPERA directory first:
 ```bash
-cd /path/to/OPERA_Docker
+cd /path/to/opera_docker
 ```
 
 #### Build CL Version Only
@@ -85,7 +82,7 @@ docker build --no-cache --platform linux/amd64 --build-arg VERSION=cl -t opera:c
 
 **Build Time:** 5-10 minutes (15-30 minutes on Apple Silicon)
 
-**Build Time:** 5-10 minutes (15-30 minutes on Apple Silicon)
+
 
 #### Build UI Version Only
 
@@ -385,13 +382,13 @@ Unblock-File -Path .\run_opera_par.ps1
 | `-st` | Standardize structures before prediction |
 | `-h` | Show full help menu |
 
-#### Troubleshooting PAR Version
+
+## Troubleshooting
+
+### PAR Version
 
 - **"Killed" or worker aborts**: Reduce the number of workers with `-P 2` or `-P 1`, and increase Docker memory allocation.
 - **X11/AWT errors**: The wrapper script handles this automatically with Xvfb virtual display.
-
-
-## Troubleshooting
 
 ### UI Version Issues
 
